@@ -46,7 +46,7 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "username",
             "password",
-            'role'
+            "role"
         )
     
     def create(self, validated_data):
@@ -54,8 +54,8 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(
             username=validated_data["username"], 
             password=password, 
-            role=validated_data['role'],
-            email=validated_data['email']
+            role=validated_data["role"],
+            email=validated_data["email"]
         )
         return user
     
@@ -86,9 +86,9 @@ class GuardianSerializer(UserSerializer):
         code = attrs.get('invite_code')
         try:
             user_id = Fernet(settings.CRYPTOGRAPHY_KEY).decrypt(code).decode()
+            inviter = User.objects.get(id=user_id)
         except:
             raise serializers.ValidationError('Wrong invite code')
-        inviter = User.objects.get(id=user_id)
         if inviter:
             return super().validate(attrs)
         else:
@@ -159,30 +159,15 @@ class StudentGroupSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         students_data = validated_data.pop('students')
         group = StudentGroup.objects.create(**validated_data)
-        students = StudentProfile.objects.get_queryset(**students_data)
-        for student in students:
+        for student_data in students_data:
+            student, created = StudentProfile.objects.get_or_create(**student_data)
             group.students.add(student)
         return group
     
-    # def update(self, instance, validated_data):
-    #     """TBD"""
-    #     try:
-    #         students = validated_data.pop('students')
-    #     except:
-    #         pass
-    #     for item in students:
-    #         student = StudentProfile.objects.get(pk=item.id)
-    #         instance.students.add(student) 
-    #     return super().update(instance, validated_data)
     def update(self, instance, validated_data):
         students_data = validated_data.pop('students')
-        print(students_data)
-        students_ids = []
-        for i in students_data:
-            students_ids.append(i['id'])
-        print(students_ids)
         instance = super(StudentGroupSerializer, self).update(instance, validated_data)
-        students = StudentProfile.objects.filter(pk__in=students_ids)
-        for student in students:
+        for student_data in students_data:
+            student, created = StudentProfile.objects.get_or_create(**student_data)
             instance.students.add(student)
         return instance

@@ -37,10 +37,11 @@ class LogoutView(views.APIView):
 class GuardianRegisterView(views.APIView):
     
     permission_classes = (permissions.AllowAny,)
-    serializer_class = serializers.GuardianSerializer
     def post(self, request):
         data = request.data
+        print(data)
         data['role'] = 'grd'
+        print(data)
         serializer = serializers.GuardianSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()

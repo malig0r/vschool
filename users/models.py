@@ -11,10 +11,10 @@ class User(AbstractUser):
 ]
     
     username = models.CharField(max_length=100, unique=True)
-    role = models.CharField(max_length=10, choices=ROLE_OPTIONS, null=False, default='tchr', editable=False)
+    role = models.CharField(max_length=10, choices=ROLE_OPTIONS, null=False, default='tchr', editable=True)
     email = models.EmailField(max_length=255, unique=True)
     password = models.CharField(max_length=500)
-    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=True)
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
     extra_kwargs = {

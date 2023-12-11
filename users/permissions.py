@@ -1,6 +1,10 @@
 from rest_framework import permissions
 from .models import GuardianProfile
 
+class ReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.method in permissions.SAFE_METHODS
+
 class IsTeacher(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.role == 'tchr'

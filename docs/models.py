@@ -40,6 +40,27 @@ GRADE_CHOICES = [
     ('9', '9'),
     ('10', '10'),
 ]
+
+
+class Schedule(models.Model):
+    name = models.CharField(max_length=200, null=False)
+    group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE)
+    weekday = models.CharField(max_length=50,choices=WEEKDAY_OPTIONS, null=False, default='1')
+    start_date = models.DateField()
+    end_date = models.DateField()
+    subject = models.CharField(max_length=20, choices=SUBJECT_CHOICES, null=False)
+    time_slot = models.CharField(max_length=20, choices=TIMESLOT_OPTIONS, null=False, default='1')
+
+    def __str__(self) -> str:
+        if self.group:
+            return f'{self.group.name} {self.name}'
+        else:
+            return self.name
+    
+    class Meta:
+        ordering = ["weekday", "time_slot"]
+
+
 class Lesson(models.Model):
     teacher = models.ForeignKey(TeacherProfile, on_delete=models.CASCADE, null=False)
     subject = models.CharField(max_length=20, choices=SUBJECT_CHOICES, null=False)
@@ -47,6 +68,8 @@ class Lesson(models.Model):
     group = models.ForeignKey(StudentGroup, on_delete=models.SET_NULL, null=True)
     time_slot = models.CharField(max_length=50, choices=TIMESLOT_OPTIONS, null=False)
     date = models.DateField(auto_now_add=True)
+    schedule = models.ForeignKey(Schedule, on_delete=models.SET_NULL, null=True, default=None)
+    
     
     def __str__(self) -> str:
         return f'{self.subject} {self.group} {self.date}'
@@ -72,24 +95,4 @@ class StudentGrade(models.Model):
     teacher = models.ForeignKey(TeacherProfile, on_delete=models.SET_NULL, null=True)
     def __str__(self) -> str:
         return f'{self.lesson} {self.grade}'
-
-class Schedule(models.Model):
-    name = models.CharField(max_length=200, null=False)
-    group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE)
-    weekday = models.CharField(max_length=50,choices=WEEKDAY_OPTIONS, null=False, default='1')
-    start_date = models.DateField()
-    end_date = models.DateField()
-    subject = models.CharField(max_length=20, choices=SUBJECT_CHOICES, null=False)
-    time_slot = models.CharField(max_length=20, choices=TIMESLOT_OPTIONS, null=False, default='1')
-    lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, null=True, default=None)
-
-    def __str__(self) -> str:
-        if self.group:
-            return f'{self.group.name} {self.name}'
-        else:
-            return self.name
-    
-    class Meta:
-        ordering = ["weekday", "time_slot"]
-
 

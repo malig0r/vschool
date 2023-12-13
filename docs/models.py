@@ -62,13 +62,13 @@ class Schedule(models.Model):
 
 
 class Lesson(models.Model):
-    teacher = models.ForeignKey(TeacherProfile, on_delete=models.CASCADE, null=False)
+    teacher = models.ForeignKey(TeacherProfile, on_delete=models.CASCADE, null=True)
     subject = models.CharField(max_length=20, choices=SUBJECT_CHOICES, null=False)
     description = models.TextField()
-    group = models.ForeignKey(StudentGroup, on_delete=models.SET_NULL, null=True)
+    group = models.ForeignKey(StudentGroup, on_delete=models.SET_NULL, null=True, related_name='lesson')
     time_slot = models.CharField(max_length=50, choices=TIMESLOT_OPTIONS, null=False)
     date = models.DateField(auto_now_add=True)
-    schedule = models.ForeignKey(Schedule, on_delete=models.SET_NULL, null=True, default=None)
+    schedule = models.ForeignKey(Schedule, on_delete=models.SET_NULL, null=True, default=None, related_name='lessons')
     
     
     def __str__(self) -> str:
@@ -94,5 +94,12 @@ class StudentGrade(models.Model):
     lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, null=True)
     teacher = models.ForeignKey(TeacherProfile, on_delete=models.SET_NULL, null=True)
     def __str__(self) -> str:
-        return f'{self.lesson} {self.grade}'
+        return f'{self.grade} {self.teacher}'
+    
+class Attendance(models.Model):
+    lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE, null=False, related_name='attendance')
+    students = models.ManyToManyField(StudentProfile)
+    
+
+
 

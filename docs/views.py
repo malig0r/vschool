@@ -2,10 +2,10 @@ from rest_framework import generics, status, views
 from django.shortcuts import get_object_or_404
 import datetime
 from rest_framework.response import Response
-from .models import Lesson, Schedule, StudentGrade, Homework
+from .models import Lesson, Schedule, StudentGrade, Homework, Attendance
 from users.permissions import IsTeacher, ReadOnly
 from users.models import TeacherProfile, StudentProfile
-from .serializers import LessonSerializer, StudentGradeSerializer, ScheduleSerializer, ClosestLessonSerializer
+from .serializers import LessonSerializer, StudentGradeSerializer, ScheduleSerializer, ClosestLessonSerializer, WeeklyJournalSerializer, AttendanceSerializer
 
 class LessonListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsTeacher|ReadOnly]
@@ -44,13 +44,13 @@ class ClosestLessonRetrieveView(generics.RetrieveAPIView):
         group = self.request.query_params.get('group')
         subject = self.request.query_params.get('subject')
         return get_object_or_404(Schedule, group=group, weekday=weekday, subject=subject)
-    
-    # def get(self, request, *args, **kwargs):
-    #     lesson = ClosestLessonSerializer(self.get_object())
-    #     message = 'Would you like to start this lesson?'
-    #     data = { 
-    #         'message': message,
-    #         'lesson': lesson,
-    #         }
-    #     return Response(data, status=status.HTTP_200_OK)
 
+class JournalRetrieveView(generics.ListAPIView):
+    serializer_class = WeeklyJournalSerializer
+    queryset = Schedule.objects.all()
+
+
+class AttendanceListCreateView(generics.ListCreateAPIView):
+    serializer_class = AttendanceSerializer
+    permission_classes = [IsTeacher,]
+    queryset = Attendance.objects.all()

@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Lesson, Schedule, Homework, StudentGrade, TIMESLOT_OPTIONS, SUBJECT_CHOICES
+from .models import Lesson, Schedule, Homework, StudentGrade, Attendance, TIMESLOT_OPTIONS, SUBJECT_CHOICES
 from users.serializers import TeacherProfileSerializer, StudentGroupSerializer, StudentProfileSerializer
 from users.models import StudentGroup, StudentProfile #TBD
+from datetime import date, timedelta
 
 
 
@@ -62,7 +63,8 @@ class ScheduleSerializer(serializers.ModelSerializer):
             'start_date',
             'end_date',
             'subject',
-            'time_slot'
+            'time_slot',
+            'id'
         ]
 
     
@@ -82,5 +84,46 @@ class StudentGradeSerializer(serializers.ModelSerializer):
         ]
 
 
-class HomeworkSerializer(serializers.ModelSerializer):
-    pass
+# class LessonsListingField(serializers.RelatedField):
+#     def to_representation(self, value):
+#         return '%s %s' % (value.time_slot, value.subject)
+    
+    # def get_queryset(self):
+    #     week_start = date.today()
+    #     week_start -= timedelta(days=week_start.weekday())
+    #     week_end = week_start + timedelta(days=7)
+    #     return Lesson.objects.filter(
+    #         date__gte=week_start,
+    #         date__lt=week_end
+    #     )
+
+
+class WeeklyJournalSerializer(serializers.ModelSerializer):
+    lessons = serializers.StringRelatedField(many=True, read_only=True)
+    grade = serializers.StringRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = Schedule
+        fields = [
+            'weekday',
+            'lessons',
+            'grade'
+        ]
+
+class AttendanceSerializer(serializers.ModelSerializer):
+    lesson = LessonSerializer(many=False, read_only=False)
+    students = StudentProfileSerializer(many=True, read_only=False)
+
+    class Meta:
+        model = Attendance
+        fields = ['lesson', 'students']
+
+    def create(self, validated_data):
+        lesson_data = validated_data.pop('lesson')
+        students_data = validated_data.pop('students')
+        lesson, created = Lesson.objects.get_or_create(**lesson_data)
+        attendance = Attendance.objects.create(lesson=lesson)
+        for student_data in students_data:
+            student = StudentProfile.objects.get(**student_data)
+            attendance.students.add(student)
+        return attendance

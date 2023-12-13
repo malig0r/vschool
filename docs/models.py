@@ -91,7 +91,7 @@ class Homework(models.Model):
 class StudentGrade(models.Model):
     grade = models.CharField(max_length=10, choices=GRADE_CHOICES, null=False)
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
-    lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, null=True)
+    lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, null=True, related_name='grades')
     teacher = models.ForeignKey(TeacherProfile, on_delete=models.SET_NULL, null=True)
     def __str__(self) -> str:
         return f'{self.grade} {self.teacher}'

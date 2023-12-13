@@ -84,30 +84,30 @@ class StudentGradeSerializer(serializers.ModelSerializer):
         ]
 
 
-# class LessonsListingField(serializers.RelatedField):
-#     def to_representation(self, value):
-#         return '%s %s' % (value.time_slot, value.subject)
+class LessonsListingField(serializers.RelatedField):
+    def to_representation(self, value):
+        return '%s %s' % (value.time_slot, value.subject)
     
-    # def get_queryset(self):
-    #     week_start = date.today()
-    #     week_start -= timedelta(days=week_start.weekday())
-    #     week_end = week_start + timedelta(days=7)
-    #     return Lesson.objects.filter(
-    #         date__gte=week_start,
-    #         date__lt=week_end
-    #     )
+    def get_queryset(self):
+        week_start = date.today()
+        week_start -= timedelta(days=week_start.weekday())
+        week_end = week_start + timedelta(days=7)
+        return Lesson.objects.filter(
+            date__gte=week_start,
+            date__lt=week_end
+        )
 
 
 class WeeklyJournalSerializer(serializers.ModelSerializer):
-    lessons = serializers.StringRelatedField(many=True, read_only=True)
-    grade = serializers.StringRelatedField(many=True, read_only=True)
-
+    grades = StudentGradeSerializer(source='filtered_grades', many=True, read_only=True)
     class Meta:
-        model = Schedule
+        model = Lesson
         fields = [
-            'weekday',
-            'lessons',
-            'grade'
+            'subject',
+            'time_slot',
+            'date',
+            'grades',
+            'id',
         ]
 
 class AttendanceSerializer(serializers.ModelSerializer):
@@ -127,3 +127,5 @@ class AttendanceSerializer(serializers.ModelSerializer):
             student = StudentProfile.objects.get(**student_data)
             attendance.students.add(student)
         return attendance
+    
+

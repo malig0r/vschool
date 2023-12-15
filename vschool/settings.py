@@ -13,7 +13,7 @@ SECRET_KEY = 'django-insecure-(+2isyunk*p0q6)&#=8871c%%s@gbn$!q)q#5^z%%wb5b#=#pq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['testserver']
 
 
 # Application definition
@@ -67,8 +67,17 @@ WSGI_APPLICATION = 'vschool.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'vschool',
+        'USER': 'postgres',
+
+        'PASSWORD': '',
+
+        'HOST': 'localhost',
+
+        'PORT': '',
     }
 }
 

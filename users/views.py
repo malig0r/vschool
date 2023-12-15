@@ -108,3 +108,4 @@ class StudentProfileView(generics.RetrieveUpdateAPIView):
     def perform_update(self, serializer):
         serializer.save(updated=now())
 
+

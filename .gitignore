@@ -3,3 +3,6 @@ __pycache__/
 db*
 schema.yml
 .vscode/
+static/
+.data/
+.pytest_cache/

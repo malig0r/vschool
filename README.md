@@ -4,9 +4,9 @@ Front-end is not built in, swagger provides basic overview of the endpoints.
 Clone the repo, build a docker image by running.
 $docker-compose up -d --build.
 Access the docker internal terminal to then run
-$python manage.py makemigrations
-$python manage.py migrate
-$python manage.py createsuperuser
+1) $python manage.py makemigrations
+2) $python manage.py migrate
+3) $python manage.py createsuperuser
 
 Admin panel available through localhost:8080/admin/
 Swagger documentation is available on the homepage.

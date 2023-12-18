@@ -1,6 +1,8 @@
 import factory
 
+from docs.models import Lesson, Schedule, Attendance, StudentGrade
 from users.models import User, StudentGroup
+from datetime import date
 
 class TeacherFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -42,3 +44,31 @@ class GuardianFactory(factory.django.DjangoModelFactory):
     is_staff = False
 
 
+
+    
+class ScheduleFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Schedule
+    name = '1A 2023 1st quarter'
+    group = factory.SubFactory(GroupFactory)
+    weekday = '1'
+    start_date = '2023-12-12'
+    end_date = '2024-12-12'
+    subject = 'math'
+    time_slot = '1'
+
+class LessonFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Lesson
+
+    subject = 'math'
+    description = 'Just a regular math class'
+    group = factory.SubFactory(GroupFactory)
+    time_slot = '1'
+    date = date.today()
+
+class GradeFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = StudentGrade
+    lesson = factory.SubFactory(LessonFactory)
+    grade = '9'

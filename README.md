@@ -1,7 +1,7 @@
 An app on django rest framework to digitalize the school documents.
 Front-end is not built in, swagger provides basic overview of the endpoints.
 
-Clone the repo, build a docker image by running.
+Clone the repo, build a docker image by running:
 $docker-compose up -d --build.
 Access the docker internal terminal to then run
 1) $python manage.py makemigrations
